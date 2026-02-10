@@ -73,7 +73,7 @@ window.addEventListener("load", () => {
   const splitHeader = new SplitText(".main-header", { type: "lines, words" });
   const splitPara = new SplitText(".main-paragraph", { type: "lines" });
 
-  gsap.set(".hero-bg", { scale: 1.2, opacity: 0 });
+  gsap.set(".hero-bg", { opacity: 0 });
   gsap.set(splitHeader.words, { y: 100, opacity: 0 });
   gsap.set(splitPara.lines, { y: 20, opacity: 0 });
   gsap.set(".benefit-item", { x: -30, opacity: 0 });
@@ -99,7 +99,7 @@ window.addEventListener("load", () => {
     heroTl
       .to(".hero-bg", {
         duration: 2.5,
-        scale: 1.3, // Safe scale to cover parallax movement
+        scale: 1, 
         opacity: 0.8,
         ease: "expo.out",
       })
@@ -532,3 +532,4 @@ window.addEventListener("resize", () => {
 if (typeof lucide !== "undefined") {
   lucide.createIcons();
 }
+
