@@ -1,0 +1,216 @@
+/* =========================
+   RESET & BASE
+   ========================= */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+}
+
+body {
+  font-family:
+    "Mulish",
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+  color: #111;
+  background-color: #fafafa;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* =========================
+   TYPOGRAPHY
+   ========================= */
+
+h1,
+h2,
+h3 {
+  font-family: "Roboto", system-ui, sans-serif;
+  letter-spacing: -0.02em;
+  color: #0f0f0f;
+}
+
+h1 {
+  font-size: clamp(2.6rem, 4vw, 4rem);
+  line-height: 1.1;
+  font-weight: 500;
+}
+
+h2 {
+  font-size: clamp(1.8rem, 2.5vw, 2.4rem);
+  margin-bottom: 1.2rem;
+  font-weight: 500;
+}
+
+p {
+  font-size: 1.05rem;
+  max-width: 65ch;
+  color: #333;
+}
+
+.main-paragraph {
+  font-size: 1.15rem;
+  color: #444;
+}
+
+/* =========================
+   LAYOUT CONTAINERS
+   ========================= */
+
+.container {
+  width: 100%;
+  overflow: hidden;
+}
+
+.section-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 6rem 2rem;
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 155, 160, 0.5);
+  z-index: 99;
+}
+
+/* =========================
+   HEADER
+   ========================= */
+
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 1.5rem 2rem;
+  z-index: 100;
+  background: rgba(250, 250, 250, 0.85);
+  backdrop-filter: blur(8px);
+}
+
+.logo {
+  font-family: "Roboto", sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-decoration: none;
+  color: #111;
+  font-size: 0.9rem;
+}
+
+/* =========================
+   HERO
+   ========================= */
+
+.hero-section {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+}
+
+.hero-container {
+  max-width: 900px;
+  padding: 0 2rem;
+}
+
+.main-header {
+  margin-bottom: 1.5rem;
+}
+
+.main-paragraph {
+  max-width: 55ch;
+}
+
+/* =========================
+   SECTION 1
+   ========================= */
+
+.section-1 {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 4rem;
+  align-items: center;
+}
+
+.section-left p {
+  margin-bottom: 1rem;
+}
+
+.section-right img {
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+  object-fit: cover;
+  filter: grayscale(10%);
+}
+
+/* =========================
+   SECTION 2
+   ========================= */
+
+.section-2 {
+  background-color: #f2f2f2;
+  border-radius: 24px;
+  padding: 5rem 3rem;
+}
+
+.section-2 p {
+  margin-top: 1.5rem;
+}
+
+/* =========================
+   SECTION 3 (placeholder)
+   ========================= */
+
+.section-3 {
+  min-height: 60vh;
+}
+
+/* =========================
+   CURSOR
+   ========================= */
+
+.cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #111;
+  pointer-events: none;
+  z-index: 999;
+  mix-blend-mode: difference;
+}
+
+/* =========================
+   RESPONSIVE
+   ========================= */
+
+@media (max-width: 900px) {
+  .section-1 {
+    grid-template-columns: 1fr;
+  }
+
+  header {
+    padding: 1rem 1.5rem;
+  }
+
+  .section-container {
+    padding: 4rem 1.5rem;
+  }
+}
