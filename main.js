@@ -73,7 +73,7 @@ window.addEventListener("load", () => {
   const splitHeader = new SplitText(".main-header", { type: "lines, words" });
   const splitPara = new SplitText(".main-paragraph", { type: "lines" });
 
-  gsap.set(".hero-bg", { opacity: 0 });
+  gsap.set(".aurora-orb", { opacity: 0, scale: 0.8 });
   gsap.set(splitHeader.words, { y: 100, opacity: 0 });
   gsap.set(splitPara.lines, { y: 20, opacity: 0 });
   gsap.set(".benefit-item", { x: -30, opacity: 0 });
@@ -97,77 +97,81 @@ window.addEventListener("load", () => {
     const heroTl = gsap.timeline();
 
     heroTl
-      .to(".hero-bg", {
-        duration: 2.5,
-        scale: 1, 
-        opacity: 0.8,
-        ease: "expo.out",
+      // 1. Header First (Fast & Snappy)
+      .to([".logo", ".nav a", ".header-extras"], {
+        duration: 0.8,
+        y: 0,
+        x: 0,
+        opacity: 1,
+        stagger: 0.05,
+        ease: "power3.out",
       })
+      // 2. Aurora (Concurrent)
+      .to(
+        ".aurora-orb",
+        {
+          duration: 2, // Faster
+          scale: 1,
+          opacity: 0.6,
+          stagger: 0.2,
+          ease: "power2.out",
+        },
+        "-=0.6",
+      )
+      // 3. Hero Content (Snappy Follow-up)
       .from(
         ".hero-container",
         {
-          duration: 2,
-          y: 60,
+          duration: 1.2, // Faster
+          y: 40,
           opacity: 0,
-          scale: 0.95,
+          scale: 0.98,
           ease: "expo.out",
         },
-        "-=2.0",
+        "-=1.5",
       )
       .from(
         ".hero-badge",
         {
-          duration: 1,
+          duration: 0.8,
           y: 20,
           opacity: 0,
-          ease: "power2.out",
-        },
-        "-=1.5",
-      )
-      .to(
-        splitHeader.words,
-        {
-          duration: 1.5,
-          y: 0,
-          opacity: 1,
-          stagger: 0.05,
-          ease: "expo.out",
-        },
-        "-=1.5",
-      )
-      .to(
-        splitPara.lines,
-        {
-          duration: 1.2,
-          y: 0,
-          opacity: 1,
-          stagger: 0.1,
-          ease: "power3.out",
-        },
-        "-=1.2",
-      )
-      .from(
-        ".benefit-item",
-        {
-          duration: 1,
-          y: 10,
-          opacity: 0,
-          stagger: 0.1,
           ease: "power2.out",
         },
         "-=1.0",
       )
       .to(
-        [".logo", ".nav a"],
+        splitHeader.words,
         {
-          duration: 0.2,
+          duration: 1,
           y: 0,
-          x: 0,
           opacity: 1,
-          stagger: 0.1,
-          ease: "power2.out",
+          stagger: 0.03, // Tighter stagger
+          ease: "expo.out",
+        },
+        "-=0.9",
+      )
+      .to(
+        splitPara.lines,
+        {
+          duration: 0.8,
+          y: 0,
+          opacity: 1,
+          stagger: 0.05,
+          ease: "power3.out",
         },
         "-=0.8",
+      )
+      .from(
+        ".benefit-item",
+        {
+          duration: 0.8,
+          y: 10,
+          opacity: 0,
+          stagger: 0.05,
+          ease: "power2.out",
+        },
+        "-=0.6",
       );
 
     // Fade in floating letters
@@ -194,13 +198,42 @@ window.addEventListener("load", () => {
           lenis.scrollTo(target, {
             offset: -100,
             duration: 1.5,
-            ease: (t) => Math.min(1, 1.001 * t * t * t), // Custom cubic lerp
+            ease: (t) => Math.min(1, 1.001 * t * t * t),
           });
         }
       });
     });
 
-    // Track active section
+    // 4. GSAP FLIP NAV HIGHLIGHT
+    const navContainer = document.querySelector(".desktop-nav");
+    const navLinks = document.querySelectorAll(".desktop-nav .nav-item");
+
+    // Create the highlight pill dynamically
+    const navHighlight = document.createElement("div");
+    navHighlight.classList.add("nav-highlight");
+    // Initially hidden until first interaction/load
+    gsap.set(navHighlight, { opacity: 0 });
+
+    // Logic to move the pill
+    const updateNavFlip = (targetItem) => {
+      if (!targetItem) return;
+
+      // Get state BEFORE change
+      const state = Flip.getState(navHighlight);
+
+      // Make change: Append to the new target
+      targetItem.appendChild(navHighlight);
+
+      // Animate from previous state
+      Flip.from(state, {
+        duration: 0.6,
+        ease: "power3.out", // Bouncy/Smooth
+        absolute: true, // Crucial for smooth position interrupts
+        onEnter: () => gsap.to(navHighlight, { opacity: 1, duration: 0.2 }),
+      });
+    };
+
+    // Track active section and update Flip
     sections.forEach((section) => {
       ScrollTrigger.create({
         trigger: section,
@@ -212,6 +245,13 @@ window.addEventListener("load", () => {
               const href = item.getAttribute("href");
               if (href === `#${section.id}`) {
                 item.classList.add("active");
+                // Trigger Flip
+                if (
+                  item.classList.contains("nav-item") &&
+                  window.innerWidth > 1024
+                ) {
+                  updateNavFlip(item);
+                }
               } else {
                 item.classList.remove("active");
               }
@@ -221,7 +261,7 @@ window.addEventListener("load", () => {
       });
     });
 
-    // Special case for hero (Start)
+    // Special flip for hero (Start)
     ScrollTrigger.create({
       trigger: ".hero-section",
       start: "top center",
@@ -231,6 +271,12 @@ window.addEventListener("load", () => {
           navItems.forEach((item) => {
             if (item.getAttribute("href") === "#") {
               item.classList.add("active");
+              if (
+                item.classList.contains("nav-item") &&
+                window.innerWidth > 1024
+              ) {
+                updateNavFlip(item);
+              }
             } else {
               item.classList.remove("active");
             }
@@ -253,23 +299,30 @@ window.addEventListener("load", () => {
         navOverlay.classList.add("active");
         lenis.stop();
 
-        // GSAP Top-Down Reveal
+        // GSAP Dropdown Reveal
         gsap.to(navOverlay, {
           clipPath: "inset(0 0 0% 0)",
+          autoAlpha: 1,
           duration: 0.8,
           ease: "expo.out",
         });
 
+        // Impressive Staggered Entrance
         gsap.fromTo(
           mobLinks,
-          { y: 20, opacity: 0 },
+          {
+            y: 50,
+            x: -20, // Slight slide from left
+            opacity: 0,
+          },
           {
             y: 0,
-            opacity: 1,
-            stagger: 0.05,
-            duration: 0.6,
-            ease: "power2.out",
-            delay: 0.3,
+            x: 0,
+            opacity: 1, // Will show dimmed white/active gradient based on class
+            stagger: 0.1, // Slower, more grand stagger
+            duration: 1,
+            ease: "power3.out",
+            delay: 0.2,
           },
         );
       };
@@ -278,10 +331,15 @@ window.addEventListener("load", () => {
         isMenuOpen = false;
         menuToggle.classList.remove("open");
 
-        gsap.to(mobLinks, { y: 10, opacity: 0, duration: 0.3 });
+        gsap.to(mobLinks, {
+          opacity: 0,
+          y: -20, // Slide up slightly when closing
+          duration: 0.3,
+        });
 
         gsap.to(navOverlay, {
           clipPath: "inset(0 0 100% 0)",
+          autoAlpha: 0,
           duration: 0.6,
           ease: "expo.inOut",
           onComplete: () => {
@@ -324,34 +382,40 @@ window.addEventListener("load", () => {
 // SCROLL ANIMATIONS
 
 // 1. Hero Parallax
+// 1. Hero Parallax & Scroll Handling
 const heroSection = document.querySelector(".hero-section");
-const heroBg = document.querySelector(".hero-bg");
+const auroraOrbs = document.querySelectorAll(".aurora-orb");
 const heroContent = document.querySelector(".hero-container");
 
 if (heroSection) {
-  gsap.to(heroBg, {
-    yPercent: 20, // Slightly reduced
-    scale: 1.1,
+  // Parallax for Aurora Orbs
+  gsap.to(auroraOrbs, {
+    yPercent: 30,
     ease: "none",
     scrollTrigger: {
       trigger: heroSection,
       start: "top top",
       end: "bottom top",
-      scrub: 1.5, // Added smoothing
+      scrub: 0,
     },
   });
 
-  gsap.to(heroContent, {
+  // Parallax for Content - handled carefully to not conflict with intro
+  // We use a timeline to ensure we are controlling the properties relative to their current state
+  const contentParallax = gsap.timeline({
+    scrollTrigger: {
+      trigger: heroSection,
+      start: "top top",
+      end: "bottom top",
+      scrub: 0.5,
+    },
+  });
+
+  contentParallax.to(heroContent, {
     opacity: 0,
     y: -50,
     scale: 0.95,
     ease: "none",
-    scrollTrigger: {
-      trigger: heroSection,
-      start: "top top",
-      end: "bottom top",
-      scrub: 1, // Added smoothing
-    },
   });
 }
 
@@ -457,20 +521,77 @@ allImgs.forEach((img) => {
   );
 });
 
-// MOUSE PARALLAX & CURSOR
+// MOUSE PARALLAX & CURSOR & AURORA INTERACTION
+// MOUSE PARALLAX & CURSOR & ALIVE AURORA INTERACTION (Optimized)
+const cursorX = gsap.quickTo(".cursor", "x", {
+  duration: 0.1,
+  ease: "power2.out",
+});
+const cursorY = gsap.quickTo(".cursor", "y", {
+  duration: 0.1,
+  ease: "power2.out",
+});
+
+// Setup quickTo for each aurora orb to optimize performance
+const auroraOrbsForQuick = document.querySelectorAll(".aurora-orb");
+const auroraQuickX = [];
+const auroraQuickY = [];
+
+auroraOrbsForQuick.forEach((orb, i) => {
+  auroraQuickX.push(
+    gsap.quickTo(orb, "x", { duration: 1.5, ease: "power2.out" }),
+  );
+  auroraQuickY.push(
+    gsap.quickTo(orb, "y", { duration: 1.5, ease: "power2.out" }),
+  );
+});
+
 document.addEventListener("mousemove", (e) => {
   const { clientX, clientY } = e;
+
+  // Normalize mouse position (-1 to 1)
   const xPos = (clientX / window.innerWidth - 0.5) * 2;
   const yPos = (clientY / window.innerHeight - 0.5) * 2;
 
-  // Cursor Move
-  gsap.to(".cursor", {
-    x: clientX,
-    y: clientY,
-    duration: 0.2,
-    ease: "power2.out",
+  // Optimized Cursor Move
+  cursorX(clientX);
+  cursorY(clientY);
+
+  // Optimized Interactive Aurora Parallax
+  auroraOrbsForQuick.forEach((orb, i) => {
+    const depth = 50 + i * 20;
+    const moveX = xPos * depth;
+    const moveY = yPos * depth;
+
+    // Use quickTo setters instead of creating new tweens
+    if (auroraQuickX[i]) auroraQuickX[i](moveX);
+    if (auroraQuickY[i]) auroraQuickY[i](moveY);
   });
 });
+
+// Initialize "Alive" Floating Animation
+function initAuroraFloat() {
+  const orbs = document.querySelectorAll(".aurora-orb");
+  orbs.forEach((orb, i) => {
+    // Randomize floats for organic feel
+    const duration = 15 + Math.random() * 10;
+    const xDist = 50 + Math.random() * 50;
+    const yDist = 50 + Math.random() * 50;
+
+    // Create specific timeline for this orb
+    const tl = gsap.timeline({ repeat: -1, yoyo: true });
+
+    tl.to(orb, {
+      xPercent: Math.random() < 0.5 ? -10 : 10,
+      yPercent: Math.random() < 0.5 ? -10 : 10,
+      scale: 1.1 + Math.random() * 0.2, // Pulse effect
+      rotation: Math.random() * 20 - 10,
+      duration: duration,
+      ease: "sine.inOut",
+    });
+  });
+}
+initAuroraFloat();
 
 // MAGNETIC ELEMENTS
 const magneticElements = document.querySelectorAll(
@@ -532,4 +653,3 @@ window.addEventListener("resize", () => {
 if (typeof lucide !== "undefined") {
   lucide.createIcons();
 }
-

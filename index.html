@@ -77,7 +77,9 @@
           <a href="#tjanster" class="nav-item" data-t="nav.services"
             >Tjänster</a
           >
-          <a href="#kontakt" class="nav-item" data-t="nav.contact">Kontakt</a>
+          <a href="#kontakt" class="nav-item contact-btn" data-t="nav.contact"
+            >Kontakt</a
+          >
         </nav>
 
         <div class="header-extras">
@@ -117,11 +119,12 @@
         <!-- <canvas id="particle-canvas"></canvas> -->
 
         <div class="hero-overlay"></div>
-        <img
-          class="hero-bg"
-          src="assets/winter.webp"
-          alt="Snöklädd vinterlandskap i Lapland, representerar Akka Copywritings nordiska rötter"
-        />
+        <div class="aurora-container">
+          <div class="aurora-orb orb-1"></div>
+          <div class="aurora-orb orb-2"></div>
+          <div class="aurora-orb orb-3"></div>
+          <div class="aurora-orb orb-4"></div>
+        </div>
         <div class="hero-container">
           <div class="hero-badge" data-t="hero.badge">Akka Copywriting</div>
           <h1 class="main-header" data-t="hero.title">
@@ -158,10 +161,9 @@
 
       <!-- Section 1: About -->
       <section class="section-wrapper section-1">
-        <span class="section-index" aria-hidden="true">01</span>
         <div class="content-grid">
           <div class="section-left">
-            <span class="eyebrow" data-t="about.eyebrow">Om mig</span>
+            <span class="eyebrow"></span>
             <h2 class="accent-serif-large" data-t="about.title">
               Strategisk <span class="accent-serif">Kommunikation</span>
             </h2>
@@ -219,6 +221,7 @@
               <img
                 src="assets/Fredrik+Sannerborg.webp"
                 alt="Fredrik Sannerborg, grundare av Akka Copywriting"
+                loading="lazy"
               />
               <div class="caption">Fredrik Sannerborg, Akka Copywriting</div>
             </div>
@@ -228,7 +231,6 @@
 
       <!-- Section 2: Case Study -->
       <section class="section-wrapper section-2" id="kundcase">
-        <span class="section-index" aria-hidden="true">02</span>
         <div class="content-grid">
           <div class="section-left">
             <span class="eyebrow" data-t="case.eyebrow">Kundcase</span>
@@ -356,6 +358,7 @@
               <img
                 src="assets/nordkapp.webp"
                 alt="Nordkapp premium motorbåt i hög fart på havet"
+                loading="lazy"
               />
               <div class="caption" data-t="case.recension_caption">
                 Mats Hjørnevik, Marknadschef, Nordkapp
@@ -366,7 +369,6 @@
       </section>
 
       <section class="section-wrapper section-3" id="tjanster">
-        <span class="section-index" aria-hidden="true">03</span>
         <div class="content-grid">
           <!-- Main Service: Core -->
           <div class="section-left service-card primary">

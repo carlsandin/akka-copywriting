@@ -372,6 +372,8 @@ p {
 }
 
 .nav-item {
+  position: relative; /* For Flip highlight */
+  z-index: 1;
   text-decoration: none;
   font-size: 0.75rem;
   text-transform: uppercase;
@@ -380,7 +382,7 @@ p {
   font-weight: 700;
   padding: 0.6rem 1.2rem;
   border-radius: 100px;
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: color 0.3s ease; /* Removed background transition */
 }
 
 .nav-item:hover {
@@ -388,12 +390,43 @@ p {
 }
 
 .nav-item.active {
-  background: rgba(255, 255, 255, 0.1);
+  /* background removed -> handled by .nav-highlight */
   color: #fff;
-  box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.05);
+  /* box-shadow removed */
 }
 
-/* Progress Bar Removed */
+/* The Moving Flip Pill */
+.nav-highlight {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 100px;
+  z-index: -1;
+  box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.05);
+  pointer-events: none;
+}
+
+/* Don't show the pill on the CTA button */
+.nav-item.contact-btn .nav-highlight {
+  display: none;
+}
+
+/* Contact Button Highlight */
+.nav-item.contact-btn {
+  background: var(--accent-gradient);
+  color: #fff !important;
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+  border: none;
+  opacity: 1;
+}
+
+.nav-item.contact-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+}
 
 /* MOBILE MENU TOGGLE */
 .menu-toggle {
@@ -444,29 +477,59 @@ p {
   background: var(--accent-gradient);
 }
 
-/* Redesigned Mobile Navigation: Top-Down Reveal */
 .mobile-nav-overlay {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: auto;
-  min-height: 500px;
-  background: rgba(10, 10, 10, 0.98);
-  backdrop-filter: blur(40px) saturate(180%);
-  -webkit-backdrop-filter: blur(40px) saturate(180%);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  z-index: 4500; /* Just below the header content */
+  min-height: 60vh;
+  background: linear-gradient(
+    to bottom,
+    rgba(5, 5, 10, 0.95),
+    rgba(10, 15, 25, 0.98)
+  );
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 0 0 60px 60px;
+  z-index: -1;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 8rem 2rem 4rem 2rem;
-  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.8);
+  align-items: flex-start;
+  padding: 8rem 2rem 5rem 10vw;
+  box-shadow: 0 50px 100px -20px rgba(0, 0, 0, 0.8);
+  overflow: hidden;
 
+  /* Animation Initial State */
   opacity: 0;
   visibility: hidden;
   clip-path: inset(0 0 100% 0);
-  /* transition handled by GSAP in main.js */
+}
+
+.mobile-nav-overlay::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+
+  background:
+    radial-gradient(
+      circle at 90% 10%,
+      rgba(59, 130, 246, 0.15) 0%,
+      transparent 60%
+    ),
+    radial-gradient(
+      circle at 10% 90%,
+      rgba(45, 212, 191, 0.1) 0%,
+      transparent 60%
+    );
+  filter: blur(40px);
+  pointer-events: none;
+  z-index: 0;
 }
 
 .mobile-nav-overlay.active {
@@ -477,41 +540,73 @@ p {
 .mobile-nav-links {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 2rem;
-  counter-reset: nav-counter;
+  align-items: flex-start;
+  gap: 1rem;
+  width: 100%;
+  position: relative;
+  z-index: 2;
 }
 
 .mobile-nav-links a {
-  font-size: 2.2rem;
+  font-size: clamp(2.5rem, 8vw, 4.5rem); /* Bigger and bolder */
   font-family: var(--font-heading);
   font-weight: 800;
-  color: #fff;
+  color: rgba(255, 255, 255, 0.3); /* Dimmed by default */
   text-decoration: none;
-  opacity: 0.4;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
   transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-  padding: 1.2rem 0;
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-  counter-increment: nav-counter;
+  /* Reset transforms handled by GSAP */
 }
 
-.mobile-nav-links a::before {
-  content: "0" counter(nav-counter);
-  font-family: var(--font-body);
-  font-size: 0.8rem;
-  font-weight: 700;
-  letter-spacing: 0.2em;
-  opacity: 0.5;
-  color: var(--color-accent);
-}
-
+/* Hover & Active Styles - The "Impressive" Part */
+/* Hover & Active Styles - The "Impressive" Part */
 .mobile-nav-links a:hover,
 .mobile-nav-links a.active {
-  opacity: 1;
-  transform: translateX(10px);
-  color: #fff;
+  color: var(--color-accent); /* Fallback */
+  background-image: linear-gradient(
+    135deg,
+    #3b82f6 0%,
+    #2dd4bf 100%
+  ); /* Explicit gradient */
+  background-size: 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent; /* Mandatory for text gradient */
+  opacity: 1 !important;
+  transform: translateX(20px);
+}
+
+.mobile-nav-links a:hover::after,
+.mobile-nav-links a.active::after {
+  display: none; /* No underlines, just pure gradient text */
+}
+
+/* Remove counters/lines completely */
+.mobile-nav-links a::before,
+.mobile-nav-links a::after {
+  content: none;
+  display: none;
+}
+
+/* Add a tiny indicator on hover */
+.mobile-nav-links a:hover::before {
+  content: "";
+  display: block;
+  position: absolute;
+  left: -30px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  box-shadow: 0 0 10px var(--color-accent);
+}
+
+.mobile-nav-overlay::after {
+  content: ""; /* Clean bottom, no border line */
+  display: none;
 }
 
 /* =========================
@@ -575,22 +670,101 @@ p {
   opacity: 0; /* Hidden for reveal */
 }
 
+/* Aurora Effect */
+.aurora-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 0;
+  /* background: radial-gradient(circle at center, #1a1a1a 0%, #0a0a0a 100%); */
+}
+
+.aurora-orb {
+  position: absolute;
+  /* Organic shapes for more natural flow */
+  border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+  filter: blur(80px); /* Slightly less blur to keep form */
+  opacity: 0.3; /* Much more subtle */
+  mix-blend-mode: color-dodge; /* Ethereal blending */
+  will-change: transform;
+}
+
+/* Green/Teal - The primary aurora color */
+.orb-1 {
+  width: 120vmax;
+  height: 60vmax; /* Stretched */
+  top: -10%;
+  left: -20%;
+  /* Elliptical gradient for curtain effect */
+  background: radial-gradient(
+    ellipse at center,
+    rgba(52, 211, 153, 0.2) 0%,
+    transparent 60%
+  );
+  transform: rotate(-15deg);
+  z-index: 2;
+}
+
+/* Violet/Purple - The secondary depth */
+.orb-2 {
+  width: 100vmax;
+  height: 50vmax;
+  bottom: -10%;
+  right: -10%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(139, 92, 246, 0.15) 0%,
+    transparent 60%
+  );
+  transform: rotate(10deg);
+  z-index: 1;
+}
+
+/* Deep Blue - The night sky base */
+.orb-3 {
+  width: 110vmax;
+  height: 80vmax;
+  top: 20%;
+  left: 10%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(29, 78, 216, 0.15) 0%,
+    transparent 60%
+  );
+  z-index: 0;
+}
+
+/* Cyan/White Highlight - The 'shimmer' */
+.orb-4 {
+  position: absolute;
+  width: 80vmax;
+  height: 40vmax;
+  top: 10%;
+  right: 20%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(34, 211, 238, 0.15) 0%,
+    transparent 50%
+  );
+  transform: rotate(-25deg);
+  z-index: 3;
+}
+
 .hero-overlay {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(
-    to bottom,
-    rgba(10, 10, 10, 0.5) 0%,
-    rgba(10, 10, 10, 0.7) 100%
-  );
+  background: transparent; /* Removed dark overlay to show aurora */
   z-index: 2;
 }
 
 /* Grain Effect */
-.hero-overlay::after {
+/* .hero-overlay::after {
   content: "";
   position: absolute;
   top: 0;
@@ -598,20 +772,10 @@ p {
   width: 100%;
   height: 100%;
   background-image: url("https://grainy-gradients.vercel.app/noise.svg");
-  opacity: 0.15;
+  opacity: 0.07;
   pointer-events: none;
   mix-blend-mode: overlay;
-}
-
-#particle-canvas {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 1;
-  opacity: 0.3;
-}
+} */
 
 .scroll-hint {
   margin-top: 2rem;
@@ -668,26 +832,26 @@ p {
   height: 100%;
   object-fit: cover;
   z-index: 0;
-  filter: grayscale(0.6) contrast(1.1) brightness(0.8);
+  filter: grayscale(0.2) contrast(1.1) brightness(0.9);
 }
 
 .hero-container {
   position: relative;
   z-index: 5;
   color: #fff;
-  padding: 4rem;
-  max-width: 1000px;
-  text-align: center; /* Center for Awwwards feel */
-  background: rgba(255, 255, 255, 0.02);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 40px;
+  padding: 0 2rem;
+  max-width: 1100px; /* Slightly wider */
+  text-align: center;
+  /* Removed boxy background */
+  background: transparent;
+  backdrop-filter: none;
+  border: none;
+  border-radius: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 2rem;
-  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.3);
+  box-shadow: none;
 }
 
 .hero-badge {
@@ -1588,7 +1752,33 @@ html.lenis body {
 /* Laptops & Small Desktops */
 @media (max-width: 1440px) {
   :root {
-    --spacing-container: 5rem;
+    --spacing-container: 4rem; /* Reduced for more breathing room */
+  }
+
+  .content-grid {
+    gap: 4rem; /* Reduced gap to give columns more space */
+  }
+
+  .section-wrapper {
+    padding: 8rem var(--spacing-container);
+  }
+
+  /* Fix for tight services content */
+  .service-card {
+    padding: 3.5rem 2.5rem;
+  }
+
+  .service-description {
+    font-size: 1rem;
+    max-width: 100%;
+  }
+
+  /* Ensure About image fills space appropriately */
+  .section-1 .image-card img {
+    width: 100%;
+    /* Use aspect-ratio to prevent 'weird' sizing if height is issue */
+    aspect-ratio: 3/4;
+    object-fit: cover;
   }
 }
 
@@ -1604,7 +1794,7 @@ html.lenis body {
     top: auto !important;
     height: auto !important;
     min-height: auto !important;
-    padding: 6rem 0;
+    padding: 6rem var(--spacing-container);
     display: flex;
     flex-direction: column;
     overflow: visible !important;
@@ -1613,7 +1803,11 @@ html.lenis body {
   .content-grid {
     display: flex;
     flex-direction: column;
-    gap: 4rem;
+    gap: 3rem;
+  }
+
+  .section-2 .content-grid {
+    margin-bottom: 4rem;
   }
 
   .section-left,
@@ -1626,7 +1820,7 @@ html.lenis body {
     position: relative !important;
     height: auto !important;
     min-height: 100dvh;
-    padding: 12rem var(--spacing-container) 6rem;
+    padding: 10rem var(--spacing-container) 6rem;
   }
 
   h1.main-header {
@@ -1686,6 +1880,10 @@ html.lenis body {
     padding: 0.6rem 1.5rem;
   }
 
+  .section-wrapper {
+    padding: 4rem var(--spacing-container);
+  }
+
   .logo {
     font-size: 1.2rem;
   }
@@ -1696,6 +1894,7 @@ html.lenis body {
 
   .lead-text {
     font-size: 1.1rem;
+    line-height: 1.5;
   }
 
   .stat-card h3 {
@@ -1714,18 +1913,60 @@ html.lenis body {
 /* Small Phones */
 @media (max-width: 480px) {
   :root {
-    --spacing-container: 2rem; /* Significantly increased for premium look on tiny screens */
+    --spacing-container: 1.25rem;
+  }
+
+  /* Compact Hero Layout */
+  .hero-section {
+    padding: 6rem 1rem 2rem !important;
+    min-height: auto;
+    height: auto;
+    align-items: start; /* Start from top to fit more */
+  }
+
+  .hero-container {
+    padding: 2rem 1.25rem;
+    gap: 1.25rem;
+    margin-top: 1rem;
+    width: 100%;
   }
 
   .main-header {
-    font-size: 2.5rem;
+    font-size: 1.9rem; /* Smaller title */
     line-height: 1.1;
+    margin-bottom: 0.25rem;
+  }
+
+  .hero-badge {
+    font-size: 0.6rem;
+    padding: 0.3rem 0.8rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .main-paragraph {
+    font-size: 0.95rem;
+    line-height: 1.4;
+    margin-bottom: 1rem;
   }
 
   .hero-benefits-simple {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
+    margin-top: 0.5rem;
+    gap: 0.8rem;
+    flex-direction: row; /* Try row again to save vertical space */
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .benefit-item {
+    font-size: 0.75rem;
+  }
+
+  .scroll-hint {
+    display: none; /* Save space */
+  }
+
+  .section-wrapper {
+    padding: 3rem var(--spacing-container);
   }
 
   .section-index {
@@ -1742,6 +1983,15 @@ html.lenis body {
 
   .mobile-nav-links a {
     font-size: 1.8rem;
+  }
+
+  .service-card {
+    padding: 2.5rem 1.5rem;
+    border-radius: 24px;
+  }
+
+  .price-block {
+    padding: 1.5rem;
   }
 }
 
