@@ -131,12 +131,14 @@ h3,
 }
 
 h1.main-header {
-  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  font-size: clamp(3rem, 7vw, 5rem);
   font-weight: 800;
-  letter-spacing: -0.04em;
+  letter-spacing: -0.025em;
   text-transform: none;
-  line-height: 1.1;
-  margin-bottom: 2rem;
+  line-height: 1.15;
+  margin-bottom: 1.5rem;
+  color: #fff;
+  padding-bottom: 0.1em; /* Prevent descender clipping */
 }
 
 h2 {
@@ -326,6 +328,7 @@ p {
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   letter-spacing: 0.1em;
+  text-decoration: none;
 }
 
 .lang-btn:hover {
@@ -342,17 +345,19 @@ p {
   background: rgba(0, 0, 0, 0.1);
 }
 
-.logo {
-  font-size: 1.5rem;
-  letter-spacing: 0.1em;
-  text-decoration: none;
-  font-weight: 800;
-  color: #fff;
-  transition: transform 0.4s ease;
+.logo-link {
+  display: block;
 }
 
-.header.scrolled .logo {
-  font-size: 1.2rem;
+.logo-img {
+  display: block;
+  height: 40px; /* Adjust based on logo proportions */
+  width: auto;
+  animation: height 0.6s ease-in-out 0s 1 forwards;
+}
+
+.header.scrolled .logo-img {
+  height: 30px;
 }
 
 .desktop-nav {
@@ -372,8 +377,6 @@ p {
 }
 
 .nav-item {
-  position: relative; /* For Flip highlight */
-  z-index: 1;
   text-decoration: none;
   font-size: 0.75rem;
   text-transform: uppercase;
@@ -382,7 +385,7 @@ p {
   font-weight: 700;
   padding: 0.6rem 1.2rem;
   border-radius: 100px;
-  transition: color 0.3s ease; /* Removed background transition */
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .nav-item:hover {
@@ -390,43 +393,26 @@ p {
 }
 
 .nav-item.active {
-  /* background removed -> handled by .nav-highlight */
-  color: #fff;
-  /* box-shadow removed */
-}
-
-/* The Moving Flip Pill */
-.nav-highlight {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
   background: rgba(255, 255, 255, 0.1);
-  border-radius: 100px;
-  z-index: -1;
+  color: #fff;
   box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.05);
-  pointer-events: none;
-}
-
-/* Don't show the pill on the CTA button */
-.nav-item.contact-btn .nav-highlight {
-  display: none;
 }
 
 /* Contact Button Highlight */
 .nav-item.contact-btn {
   background: var(--accent-gradient);
-  color: #fff !important;
+  color: #fff !important; /* Force white text */
   box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
   border: none;
-  opacity: 1;
+  opacity: 1; /* Ensure full visibility */
 }
 
 .nav-item.contact-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
 }
+
+/* Progress Bar Removed */
 
 /* MOBILE MENU TOGGLE */
 .menu-toggle {
@@ -492,7 +478,6 @@ p {
   backdrop-filter: blur(40px);
   -webkit-backdrop-filter: blur(40px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 0 0 60px 60px;
   z-index: -1;
   display: flex;
   flex-direction: column;
@@ -575,6 +560,7 @@ p {
   -webkit-text-fill-color: transparent; /* Mandatory for text gradient */
   opacity: 1 !important;
   transform: translateX(20px);
+  padding-right: 0.2rem; /* Fix right-side clipping */
 }
 
 .mobile-nav-links a:hover::after,
@@ -631,127 +617,132 @@ p {
    HERO
    ========================= */
 
-.hero-section {
+.hero-section.minimalist-hero {
   min-height: 100vh;
   width: 100%;
   display: flex;
+  flex-direction: column;
   justify-content: center;
-  align-items: center;
-  text-align: left;
+  align-items: flex-start; /* Left align for minimalist look */
   position: relative;
+  background: #000025; /* Deep black */
+  color: #fff;
+  padding: 0 var(--spacing-container);
   overflow: hidden;
-  background: var(--bg-dark);
-  z-index: 1;
-  padding: 8rem 0;
 }
 
-.hero-visual {
+.grain-overlay {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 1;
+  background-image: url("https://grainy-gradients.vercel.app/noise.svg");
+  opacity: 0.05;
   pointer-events: none;
-  perspective: 1000px;
+  z-index: 1;
 }
 
-.floating-letter {
-  position: absolute;
-  top: var(--y);
-  left: var(--x);
-  font-family: var(--font-heading);
-  font-size: clamp(3rem, 10vw, 8rem);
-  font-weight: 800;
-  color: rgba(255, 255, 255, 0.03);
-  line-height: 1;
-  user-select: none;
-  filter: blur(4px);
-  opacity: 0; /* Hidden for reveal */
-}
+/* Old hero styles removed */
 
-/* Aurora Effect */
-.aurora-container {
+/* =========================
+   PARALLAX LAYERS
+   ========================= */
+
+.parallax-wrapper {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  overflow: hidden;
   z-index: 0;
-  /* background: radial-gradient(circle at center, #1a1a1a 0%, #0a0a0a 100%); */
+  overflow: hidden;
+  background: #020205; /* Deepest black/blue base */
 }
 
-.aurora-orb {
+.parallax-layer {
   position: absolute;
-  /* Organic shapes for more natural flow */
-  border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
-  filter: blur(80px); /* Slightly less blur to keep form */
-  opacity: 0.3; /* Much more subtle */
-  mix-blend-mode: color-dodge; /* Ethereal blending */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   will-change: transform;
 }
 
-/* Green/Teal - The primary aurora color */
-.orb-1 {
-  width: 120vmax;
-  height: 60vmax; /* Stretched */
-  top: -10%;
-  left: -20%;
-  /* Elliptical gradient for curtain effect */
-  background: radial-gradient(
-    ellipse at center,
-    rgba(52, 211, 153, 0.2) 0%,
-    transparent 60%
-  );
-  transform: rotate(-15deg);
-  z-index: 2;
+/* Layer 1: Background Sky + Aurora Hint */
+.layer-bg {
+  background:
+    radial-gradient(ellipse at 50% 0%, #0a1f3d 0%, #020205 60%),
+    radial-gradient(
+      circle at 80% 20%,
+      rgba(45, 212, 191, 0.15) 0%,
+      transparent 40%
+    ),
+    /* Subtle teal glow */ url("https://grainy-gradients.vercel.app/noise.svg"); /* Grain texture */
+  z-index: 1;
+  background-size: cover;
 }
+
+/* Layer 2: Distant Mountains (Lighter, further back) */
+.layer-mountains-back {
+  z-index: 2;
+  background: linear-gradient(
+    to bottom,
+    transparent 40%,
+    #0d1b2a 40%,
+    #050a10 100%
+  );
+  /* Simulate mountain shape with clip-path or multiple gradients if no image */
+  clip-path: polygon(
+    0% 100%,
+    0% 55%,
+    15% 45%,
+    35% 60%,
+    55% 40%,
+    80% 55%,
+    100% 45%,
+    100% 100%
+  );
+  opacity: 0.6;
+  filter: blur(2px);
+  transform: scale(1.1); /* Slight Zoom for parallax */
+}
+
+/* Layer 3: Foreground Mountains (Darker, closer) */
+.layer-mountains-front {
+  z-index: 3;
+  background: linear-gradient(to bottom, transparent 60%, #020408 60%);
+  /* Sharper, closer mountain silhouette */
+  clip-path: polygon(
+    0% 100%,
+    0% 75%,
+    20% 65%,
+    45% 85%,
+    70% 60%,
+    100% 80%,
+    100% 100%
+  );
+  filter: contrast(1.1);
+}
+
+.parallax-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 0.4) 100%
+  );
+  z-index: 4;
+  pointer-events: none;
+}
+
+/* Aurora Effect Removed */
 
 /* Violet/Purple - The secondary depth */
-.orb-2 {
-  width: 100vmax;
-  height: 50vmax;
-  bottom: -10%;
-  right: -10%;
-  background: radial-gradient(
-    ellipse at center,
-    rgba(139, 92, 246, 0.15) 0%,
-    transparent 60%
-  );
-  transform: rotate(10deg);
-  z-index: 1;
-}
-
-/* Deep Blue - The night sky base */
-.orb-3 {
-  width: 110vmax;
-  height: 80vmax;
-  top: 20%;
-  left: 10%;
-  background: radial-gradient(
-    ellipse at center,
-    rgba(29, 78, 216, 0.15) 0%,
-    transparent 60%
-  );
-  z-index: 0;
-}
-
-/* Cyan/White Highlight - The 'shimmer' */
-.orb-4 {
-  position: absolute;
-  width: 80vmax;
-  height: 40vmax;
-  top: 10%;
-  right: 20%;
-  background: radial-gradient(
-    ellipse at center,
-    rgba(34, 211, 238, 0.15) 0%,
-    transparent 50%
-  );
-  transform: rotate(-25deg);
-  z-index: 3;
-}
 
 .hero-overlay {
   position: absolute;
@@ -838,20 +829,105 @@ p {
 .hero-container {
   position: relative;
   z-index: 5;
-  color: #fff;
-  padding: 0 2rem;
-  max-width: 1100px; /* Slightly wider */
-  text-align: center;
-  /* Removed boxy background */
-  background: transparent;
-  backdrop-filter: none;
-  border: none;
-  border-radius: 0;
+  width: 100%;
+  max-width: 1600px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
-  align-items: center;
   gap: 2rem;
-  box-shadow: none;
+  padding-top: 4rem;
+  /* Ensure padding on mobile */
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+@media (min-width: 768px) {
+  .hero-container {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
+.hero-badge-minimal {
+  font-size: 0.75rem;
+  letter-spacing: 0.2rem;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.hero-badge-minimal::before {
+  content: "";
+  display: block;
+  width: 40px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.main-header-minimal {
+  font-family: var(--font-heading);
+  font-size: clamp(3.5rem, 11vw, 9rem); /* Adjusted min size */
+  line-height: 0.95; /* Slightly relaxed */
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  color: #fff;
+  margin-bottom: 2rem;
+  margin-left: -0.05em;
+  perspective: 1000px;
+  transform-style: preserve-3d;
+  padding-bottom: 0.1em; /* Prevent internal clipping */
+}
+
+/* Optional serif accent for one word if desired */
+.outline-text {
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.3);
+  font-weight: 400; /* Lighter for outline */
+}
+
+.hero-footer {
+  margin-top: 4rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 2rem;
+  flex-wrap: wrap; /* Allow wrapping on small screens */
+  gap: 2rem;
+}
+
+@media (max-width: 768px) {
+  .hero-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    margin-top: 2rem;
+  }
+}
+
+.main-paragraph-minimal {
+  font-size: 1.1rem;
+  max-width: 30ch;
+  color: rgba(255, 255, 255, 0.6);
+  line-height: 1.5;
+}
+
+.scroll-ind {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  opacity: 0.6;
+}
+
+.scroll-ind .line {
+  width: 60px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.3);
 }
 
 .hero-badge {
@@ -869,15 +945,6 @@ p {
   border-radius: 100px;
 }
 
-.main-header {
-  font-size: clamp(2.5rem, 7vw, 5.5rem);
-  font-weight: 800;
-  line-height: 1;
-  letter-spacing: -0.04em;
-  margin: 0;
-  color: #fff;
-}
-
 .accent-serif,
 .accent-serif div,
 .accent-serif span {
@@ -891,6 +958,11 @@ p {
   display: inline-block;
   letter-spacing: 0;
   color: var(--color-accent); /* Fallback */
+  /* Fix for clipping */
+  padding-right: 0.2em;
+  margin-right: -0.2em;
+  padding-bottom: 0.1em;
+  margin-bottom: -0.1em;
 }
 
 .lead-text {
@@ -1022,11 +1094,13 @@ p {
 }
 
 .main-paragraph {
-  font-size: clamp(1.1rem, 1.5vw, 1.4rem);
-  color: rgba(255, 255, 255, 0.6);
-  max-width: 40ch;
+  font-size: clamp(1.1rem, 1.5vw, 1.35rem);
+  color: rgba(255, 255, 255, 0.85);
+  max-width: 44ch;
   margin: 0;
-  line-height: 1.5;
+  line-height: 1.65;
+  letter-spacing: -0.01em;
+  font-weight: 400;
 }
 
 .hero-benefits-simple {
@@ -1232,11 +1306,24 @@ p {
 }
 
 .caption {
-  margin-top: 1rem;
-  font-size: 0.875rem;
-  color: var(--color-text-muted);
-  font-style: italic;
-  text-align: right;
+  position: absolute;
+  bottom: 1.5rem;
+  left: 1.5rem;
+  background: rgba(10, 10, 10, 0.3);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 0.6rem 1.2rem;
+  border-radius: 100px;
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  margin-top: 0;
+  pointer-events: none;
+  z-index: 2;
 }
 
 /* =========================
@@ -1262,198 +1349,198 @@ p {
   margin-bottom: 0;
 }
 
+/* =========================
+   STAT CARDS: "The Monolith" Design
+   ========================= */
+
+/* =========================
+   STAT CARDS: "The Catalyst" Design
+   ========================= */
+
 .stats-grid {
   display: flex;
   flex-direction: column;
   gap: 2rem;
-  margin-top: 3rem;
+  margin-top: 2rem;
+  width: 100%;
 }
 
-/* Case Study Story Styling */
-.case-story {
-  margin-top: 2.5rem;
-}
-
-.story-divider {
-  width: 60px;
-  height: 2px;
-  background: var(--accent-gradient);
-  margin: 2.5rem 0;
-  opacity: 0.6;
-}
-
-.text-highlight {
-  color: var(--color-text-main);
-  font-weight: 700;
+.stat-card {
+  background: #0f172a; /* Rich Slate Dark */
+  padding: 1.5rem 2rem; /* Reduced height */
+  border-radius: 16px;
   position: relative;
-  display: inline-block;
+  overflow: hidden;
+  transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+  box-shadow: 0 20px 40px -10px rgba(15, 23, 42, 0.3);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  margin: 0;
+  width: 100%;
 }
 
-.text-highlight::after {
+/* Hover Lift */
+.stat-card:hover {
+  transform: translateY(-5px) scale(1.01);
+  box-shadow: 0 30px 60px -15px rgba(15, 23, 42, 0.4);
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+/* Background ambient glow */
+.stat-card::before {
   content: "";
   position: absolute;
-  bottom: 2px;
-  left: 0;
+  top: -50%;
+  right: -50%;
   width: 100%;
-  height: 8px;
-  background: var(--accent-gradient);
-  opacity: 0.1;
-  z-index: -1;
+  height: 100%;
+  background: radial-gradient(
+    circle,
+    rgba(59, 130, 246, 0.15),
+    transparent 70%
+  );
+  transition: all 0.5s ease;
+  pointer-events: none;
 }
 
-/* Refined Stat Cards */
-.stat-header {
-  display: flex;
-  align-items: center;
-  gap: 0.8rem;
-  margin-bottom: 1.5rem;
+.stat-card:hover::before {
+  transform: scale(1.5);
   opacity: 0.8;
 }
 
+/* Typography & Layout */
+.stat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  width: 100%;
+}
+
+.stat-label {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: #94a3b8; /* Slate 400 */
+}
+
 .stat-icon-sm {
-  width: 16px;
-  height: 16px;
+  width: 24px;
+  height: 24px;
   color: var(--color-accent);
+  filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.4));
+}
+
+.stat-card h3 {
+  font-family: var(--font-body); /* Switch to Sans-Serif for max readability */
+  font-weight: 800;
+  font-size: clamp(4rem, 6vw, 5.5rem); /* Massive */
+  line-height: 1;
+  margin: 0.5rem 0 1.5rem 0;
+  color: #fff;
+  letter-spacing: -0.04em;
+  position: relative;
+  z-index: 1;
+  text-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.stat-card p {
+  color: #cbd5e1; /* Slate 300 - Very readable */
+  font-size: 1.1rem;
+  line-height: 1.6;
+  font-weight: 500;
+  max-width: 95%;
+  position: relative;
+  z-index: 1;
+  padding-left: 1rem;
+  border-left: 2px solid rgba(59, 130, 246, 0.5); /* Accent line for reading flow */
+}
+
+/* =========================
+   THE HIGHLIGHT CARD (Middle)
+   ========================= */
+.stat-card.highlight {
+  background: var(--accent-gradient);
+  box-shadow: 0 30px 80px rgba(59, 130, 246, 0.4);
+  border: none;
+  z-index: 2;
+}
+
+/* Pulse animation for highlight */
+/* Pulse animation for highlight */
+@keyframes pulse-glow {
+  0% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 15px rgba(59, 130, 246, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+  }
+}
+
+.stat-card.highlight:hover {
+  animation: pulse-glow 2s infinite;
+  transform: translateY(-5px) scale(1.02);
+}
+
+.stat-card.highlight .stat-label {
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .stat-card.highlight .stat-icon-sm {
   color: #fff;
-}
-
-.stat-label {
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 0.15em;
-  font-weight: 700;
-  color: var(--color-text-muted);
-}
-
-.stat-card.highlight .stat-label {
-  color: rgba(255, 255, 255, 0.6);
-}
-
-.section-2 .image-card {
-  max-height: 80vh;
-  border-radius: 32px;
-  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.08);
-}
-
-.section-1 .image-card,
-.section-2 .image-card {
-  will-change: transform;
-}
-
-.section-1 .image-card img,
-.section-2 .image-card img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center 25%; /* Frame the subject better */
-  will-change: transform, clip-path;
-}
-
-.image-card {
-  position: relative;
-  border-radius: 32px;
-  overflow: hidden;
-}
-
-.image-card img {
-  width: 100%;
-  height: auto;
-  display: block;
-  transition: all 0.6s ease;
-}
-
-/* Image hover effect simplified */
-.image-card:hover img {
-  transform: scale(1.05);
-}
-
-.caption {
-  position: absolute;
-  bottom: 2rem;
-  left: 2rem;
-  background: rgba(10, 10, 10, 0.4);
-  backdrop-filter: blur(10px);
-  padding: 0.8rem 1.5rem;
-  border-radius: 100px;
-  color: #fff;
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.stat-card {
-  background: var(--bg-card);
-  padding: 3rem 2.5rem;
-  border-radius: 32px;
-  border: 1px solid var(--color-border);
-  display: flex;
-  flex-direction: column;
-  gap: 1.2rem;
-  position: relative;
-  overflow: hidden;
-  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: var(--shadow-sm);
-  max-width: 450px; /* Keep them from being too wide when stacked */
-}
-
-/* Staggered stacking effect */
-.stats-grid .stat-card:nth-child(2) {
-  align-self: flex-end;
-  transform: translateX(-10px);
-}
-
-.stats-grid .stat-card:nth-child(3) {
-  transform: translateX(10px);
-}
-
-.stat-card.highlight {
-  background: var(--color-text-main);
-  border-color: var(--color-text-main);
-  color: #fff;
-  z-index: 2;
-  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.1);
-}
-
-.stat-card:hover {
-  transform: translateY(-8px) scale(1.02);
-  box-shadow: var(--shadow-lg);
-  border-color: var(--color-accent);
-  z-index: 10;
-}
-
-.stat-card h3 {
-  font-size: clamp(2rem, 3vw, 3.5rem);
-  font-weight: 800;
-  line-height: 1;
-  margin: 0;
-  letter-spacing: -0.04em;
-  background: var(--accent-gradient);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.6));
 }
 
 .stat-card.highlight h3 {
-  background: #fff;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.stat-card p {
-  font-size: 0.9rem;
-  line-height: 1.6;
-  color: var(--color-text-muted);
-  margin: 0;
-  font-weight: 500;
+  color: #fff;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
 
 .stat-card.highlight p {
-  color: rgba(255, 255, 255, 0.75);
+  color: #fff;
+  font-weight: 600;
+  border-left-color: rgba(255, 255, 255, 0.5);
+}
+
+.stat-card.highlight::before {
+  display: none; /* No radial overlay on gradient */
+}
+
+/* Large Icon Watermark */
+.stat-card::after {
+  content: "";
+  position: absolute;
+  bottom: -20px;
+  right: -20px;
+  width: 120px;
+  height: 120px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23334155' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 12h-4l-3 9L9 3l-3 9H2'/%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+  opacity: 0.1;
+  transform: rotate(-10deg);
+  pointer-events: none;
+}
+
+.stat-card.highlight::after {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M16 12l-4-4-4 4'/%3E%3Cpath d='M12 16V8'/%3E%3C/svg%3E");
+  opacity: 0.2;
+}
+
+/* Remove Desktop Pop-out Polish */
+@media (min-width: 1024px) {
+  .stat-card.highlight {
+    margin-left: 0;
+    width: 100%;
+    padding: 1.5rem 2rem;
+  }
 }
 
 .stat-card .stat-icon {
@@ -1750,33 +1837,70 @@ html.lenis body {
 }
 
 /* Laptops & Small Desktops */
+/* High-DPI screens specifically (Matebook X Pro) */
+@media (min-width: 1441px) and (max-width: 1680px) {
+  :root {
+    --spacing-container: 4rem;
+  }
+  .main-header-minimal {
+    font-size: clamp(3rem, 5vw, 5.5rem); /* Capped smaller for high-UI scale */
+  }
+  .big-link {
+    font-size: 3rem;
+  }
+}
+
+/* Standard Laptops & Small Desktops */
 @media (max-width: 1440px) {
   :root {
     --spacing-container: 4rem; /* Reduced for more breathing room */
   }
 
   .content-grid {
-    gap: 4rem; /* Reduced gap to give columns more space */
+    gap: 3rem; /* Tighter gap */
   }
 
   .section-wrapper {
-    padding: 8rem var(--spacing-container);
+    padding: 6rem var(--spacing-container);
   }
 
-  /* Fix for tight services content */
+  .main-header-minimal {
+    font-size: clamp(3.5rem, 7vw, 7rem); /* Restored punchier scaling */
+  }
+
+  .hero-footer {
+    gap: 1.5rem;
+    margin-top: 2rem;
+  }
+
+  .contact-p {
+    font-size: 1.1rem;
+  }
+
+  .big-link {
+    font-size: clamp(2.5rem, 5vw, 4rem);
+  }
+
   .service-card {
-    padding: 3.5rem 2.5rem;
+    padding: 3rem 2rem;
   }
 
   .service-description {
     font-size: 1rem;
     max-width: 100%;
+    margin-bottom: 1.5rem;
   }
 
-  /* Ensure About image fills space appropriately */
+  .price-block {
+    padding: 1.5rem;
+  }
+
+  .amount {
+    font-size: 2.5rem;
+  }
+
   .section-1 .image-card img {
     width: 100%;
-    /* Use aspect-ratio to prevent 'weird' sizing if height is issue */
     aspect-ratio: 3/4;
     object-fit: cover;
   }
@@ -1785,10 +1909,9 @@ html.lenis body {
 /* Tablets (Portrait & Landscape) */
 @media (max-width: 1024px) {
   :root {
-    --spacing-container: 3rem; /* Increased for better breathing room */
+    --spacing-container: 3rem;
   }
 
-  /* Structural Resets */
   .section-wrapper {
     position: relative !important;
     top: auto !important;
@@ -1849,6 +1972,7 @@ html.lenis body {
     max-width: 100%;
     transform: none !important;
     align-self: stretch !important;
+    margin: 0 !important;
   }
 
   .image-card {

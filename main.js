@@ -68,27 +68,64 @@ const reveal = (elements, trigger, delay = 0) => {
 window.addEventListener("load", () => {
   // --- PRELOADER SEQUENCE ---
   const preloaderTl = gsap.timeline();
+  const counterElement = document.querySelector(".counter");
+  const loaderLine = document.querySelector(".loader-line");
+  const count = { val: 0 };
 
-  // Prepare Hero Elements
-  const splitHeader = new SplitText(".main-header", { type: "lines, words" });
-  const splitPara = new SplitText(".main-paragraph", { type: "lines" });
+  // Initial set for Hero Elements
+  const splitHeader = new SplitText(".main-header-minimal", {
+    type: "lines, chars",
+  });
+  gsap.set(splitHeader.chars, { y: 120, opacity: 0, rotateX: -20 }); // 3D rotate effect
+  gsap.set(".hero-badge-minimal", { opacity: 0, x: -30 });
+  gsap.set([".hero-footer", ".main-paragraph-minimal", ".scroll-ind"], {
+    opacity: 0,
+    y: 30,
+  });
+  gsap.set([".logo-link", ".nav-item", ".menu-toggle", ".lang-switcher"], {
+    opacity: 0,
+    y: -20,
+  });
 
-  gsap.set(".aurora-orb", { opacity: 0, scale: 0.8 });
-  gsap.set(splitHeader.words, { y: 100, opacity: 0 });
-  gsap.set(splitPara.lines, { y: 20, opacity: 0 });
-  gsap.set(".benefit-item", { x: -30, opacity: 0 });
-  gsap.set(".nav a", { y: -20, opacity: 0 });
-  gsap.set(".logo", { opacity: 0, x: -20 });
+  // 1. Counter Animation
+  if (counterElement) {
+    preloaderTl.to(count, {
+      val: 100,
+      duration: 1.0,
+      ease: "power3.inOut",
+      onUpdate: () => {
+        counterElement.innerText = Math.floor(count.val) + "%";
+      },
+    });
 
+    // Line animation sync
+    if (loaderLine) {
+      gsap.to(loaderLine, {
+        scaleX: 1,
+        duration: 2.0,
+        ease: "power3.inOut",
+      });
+    }
+  }
+
+  // 2. Preloader Exit (Curtain Up)
   preloaderTl
-    .to(".loading-text", { opacity: 0, duration: 0.2, delay: 0.2 })
-    .to(".counter", { y: -50, opacity: 0, duration: 0.5, ease: "power3.in" })
-    .to(".preloader", {
-      yPercent: -100,
+    .to(".loader-content", {
       opacity: 0,
-      duration: 0.6,
-      ease: "power4.inOut",
+      y: -50,
+      duration: 0.5,
+      ease: "power2.in",
     })
+    .to(
+      ".preloader",
+      {
+        height: 0, // Slide up using height or yPercent? Curtain up is usually height 0 or yPercent -100
+        yPercent: -100,
+        duration: 1.2,
+        ease: "expo.inOut",
+      },
+      "-=0.2",
+    )
     .add(() => {
       triggerHeroReveal();
     }, "-=0.8");
@@ -97,186 +134,83 @@ window.addEventListener("load", () => {
     const heroTl = gsap.timeline();
 
     heroTl
-      // 1. Header First (Fast & Snappy)
-      .to([".logo", ".nav a", ".header-extras"], {
-        duration: 0.8,
+      // 1. Navbar & Logo (Top Down)
+      .to([".logo-link", ".nav-item", ".menu-toggle", ".lang-switcher"], {
+        duration: 1,
         y: 0,
-        x: 0,
         opacity: 1,
-        stagger: 0.05,
+        stagger: 0.1,
         ease: "power3.out",
       })
-      // 2. Aurora (Concurrent)
+      // 2. Hero Badge
       .to(
-        ".aurora-orb",
-        {
-          duration: 2, // Faster
-          scale: 1,
-          opacity: 0.6,
-          stagger: 0.2,
-          ease: "power2.out",
-        },
-        "-=0.6",
-      )
-      // 3. Hero Content (Snappy Follow-up)
-      .from(
-        ".hero-container",
-        {
-          duration: 1.2, // Faster
-          y: 40,
-          opacity: 0,
-          scale: 0.98,
-          ease: "expo.out",
-        },
-        "-=1.5",
-      )
-      .from(
-        ".hero-badge",
-        {
-          duration: 0.8,
-          y: 20,
-          opacity: 0,
-          ease: "power2.out",
-        },
-        "-=1.0",
-      )
-      .to(
-        splitHeader.words,
+        ".hero-badge-minimal",
         {
           duration: 1,
-          y: 0,
+          x: 0,
           opacity: 1,
-          stagger: 0.03, // Tighter stagger
-          ease: "expo.out",
-        },
-        "-=0.9",
-      )
-      .to(
-        splitPara.lines,
-        {
-          duration: 0.8,
-          y: 0,
-          opacity: 1,
-          stagger: 0.05,
           ease: "power3.out",
         },
         "-=0.8",
       )
-      .from(
-        ".benefit-item",
+      // 3. Main Header (Massive Text)
+      .to(
+        splitHeader.chars,
         {
-          duration: 0.8,
-          y: 10,
-          opacity: 0,
-          stagger: 0.05,
-          ease: "power2.out",
+          duration: 1.2,
+          y: 0,
+          opacity: 1,
+          rotateX: 0,
+          stagger: 0.03,
+          ease: "expo.out",
         },
-        "-=0.6",
+        "-=1.0",
+      )
+      // 4. Footer Elements (Bottom)
+      .to(
+        [".hero-footer", ".main-paragraph-minimal", ".scroll-ind"],
+        {
+          duration: 1,
+          y: 0,
+          opacity: 1,
+          stagger: 0.1,
+          ease: "power3.out",
+        },
+        "-=1.2",
       );
+  }
 
-    // Fade in floating letters
-    gsap.to(".floating-letter", {
-      opacity: 1,
-      stagger: 0.1,
-      duration: 2,
-      ease: "power2.out",
-      delay: 0.5,
+  // SMOOTH SCROLL & ACTIVE STATE
+  const navItems = document.querySelectorAll(".nav-item, .mobile-nav-links a");
+  const sections = document.querySelectorAll("section[id]");
+
+  navItems.forEach((item) => {
+    item.addEventListener("click", (e) => {
+      const href = item.getAttribute("href");
+      if (href.startsWith("#")) {
+        e.preventDefault();
+        const target = href === "#" ? 0 : href;
+        lenis.scrollTo(target, {
+          offset: -100,
+          duration: 1.5,
+          ease: (t) => Math.min(1, 1.001 * t * t * t),
+        });
+      }
     });
+  });
 
-    // SMOOTH SCROLL & ACTIVE STATE
-    const navItems = document.querySelectorAll(
-      ".nav-item, .mobile-nav-links a",
-    );
-    const sections = document.querySelectorAll("section[id]");
-
-    navItems.forEach((item) => {
-      item.addEventListener("click", (e) => {
-        const href = item.getAttribute("href");
-        if (href.startsWith("#")) {
-          e.preventDefault();
-          const target = href === "#" ? 0 : href;
-          lenis.scrollTo(target, {
-            offset: -100,
-            duration: 1.5,
-            ease: (t) => Math.min(1, 1.001 * t * t * t),
-          });
-        }
-      });
-    });
-
-    // 4. GSAP FLIP NAV HIGHLIGHT
-    const navContainer = document.querySelector(".desktop-nav");
-    const navLinks = document.querySelectorAll(".desktop-nav .nav-item");
-
-    // Create the highlight pill dynamically
-    const navHighlight = document.createElement("div");
-    navHighlight.classList.add("nav-highlight");
-    // Initially hidden until first interaction/load
-    gsap.set(navHighlight, { opacity: 0 });
-
-    // Logic to move the pill
-    const updateNavFlip = (targetItem) => {
-      if (!targetItem) return;
-
-      // Get state BEFORE change
-      const state = Flip.getState(navHighlight);
-
-      // Make change: Append to the new target
-      targetItem.appendChild(navHighlight);
-
-      // Animate from previous state
-      Flip.from(state, {
-        duration: 0.6,
-        ease: "power3.out", // Bouncy/Smooth
-        absolute: true, // Crucial for smooth position interrupts
-        onEnter: () => gsap.to(navHighlight, { opacity: 1, duration: 0.2 }),
-      });
-    };
-
-    // Track active section and update Flip
-    sections.forEach((section) => {
-      ScrollTrigger.create({
-        trigger: section,
-        start: "top 200px",
-        end: "bottom 200px",
-        onToggle: (self) => {
-          if (self.isActive) {
-            navItems.forEach((item) => {
-              const href = item.getAttribute("href");
-              if (href === `#${section.id}`) {
-                item.classList.add("active");
-                // Trigger Flip
-                if (
-                  item.classList.contains("nav-item") &&
-                  window.innerWidth > 1024
-                ) {
-                  updateNavFlip(item);
-                }
-              } else {
-                item.classList.remove("active");
-              }
-            });
-          }
-        },
-      });
-    });
-
-    // Special flip for hero (Start)
+  // Track active section
+  sections.forEach((section) => {
     ScrollTrigger.create({
-      trigger: ".hero-section",
-      start: "top center",
-      end: "bottom center",
+      trigger: section,
+      start: "top 200px",
+      end: "bottom 200px",
       onToggle: (self) => {
         if (self.isActive) {
           navItems.forEach((item) => {
-            if (item.getAttribute("href") === "#") {
+            const href = item.getAttribute("href");
+            if (href === `#${section.id}`) {
               item.classList.add("active");
-              if (
-                item.classList.contains("nav-item") &&
-                window.innerWidth > 1024
-              ) {
-                updateNavFlip(item);
-              }
             } else {
               item.classList.remove("active");
             }
@@ -284,139 +218,189 @@ window.addEventListener("load", () => {
         }
       },
     });
+  });
 
-    // REFINED MOBILE MENU
-    const menuToggle = document.querySelector(".menu-toggle");
-    const navOverlay = document.querySelector(".mobile-nav-overlay");
-    const mobLinks = document.querySelectorAll(".mobile-nav-links a");
-
-    if (menuToggle && navOverlay) {
-      let isMenuOpen = false;
-
-      const openMenu = () => {
-        isMenuOpen = true;
-        menuToggle.classList.add("open");
-        navOverlay.classList.add("active");
-        lenis.stop();
-
-        // GSAP Dropdown Reveal
-        gsap.to(navOverlay, {
-          clipPath: "inset(0 0 0% 0)",
-          autoAlpha: 1,
-          duration: 0.8,
-          ease: "expo.out",
+  // Special case for hero (Start)
+  ScrollTrigger.create({
+    trigger: ".hero-section",
+    start: "top center",
+    end: "bottom center",
+    onToggle: (self) => {
+      if (self.isActive) {
+        navItems.forEach((item) => {
+          if (item.getAttribute("href") === "#") {
+            item.classList.add("active");
+          } else {
+            item.classList.remove("active");
+          }
         });
+      }
+    },
+  });
 
-        // Impressive Staggered Entrance
-        gsap.fromTo(
-          mobLinks,
-          {
-            y: 50,
-            x: -20, // Slight slide from left
-            opacity: 0,
-          },
-          {
-            y: 0,
-            x: 0,
-            opacity: 1, // Will show dimmed white/active gradient based on class
-            stagger: 0.1, // Slower, more grand stagger
-            duration: 1,
-            ease: "power3.out",
-            delay: 0.2,
-          },
-        );
-      };
+  // REFINED MOBILE MENU
+  const menuToggle = document.querySelector(".menu-toggle");
+  const navOverlay = document.querySelector(".mobile-nav-overlay");
+  const mobLinks = document.querySelectorAll(".mobile-nav-links a");
 
-      const closeMenu = (callback) => {
-        isMenuOpen = false;
-        menuToggle.classList.remove("open");
+  if (menuToggle && navOverlay) {
+    let isMenuOpen = false;
 
-        gsap.to(mobLinks, {
-          opacity: 0,
-          y: -20, // Slide up slightly when closing
-          duration: 0.3,
-        });
+    const openMenu = () => {
+      isMenuOpen = true;
+      menuToggle.classList.add("open");
+      navOverlay.classList.add("active");
+      lenis.stop();
 
-        gsap.to(navOverlay, {
-          clipPath: "inset(0 0 100% 0)",
-          autoAlpha: 0,
-          duration: 0.6,
-          ease: "expo.inOut",
-          onComplete: () => {
-            navOverlay.classList.remove("active");
-            lenis.start();
-            if (callback) callback();
-          },
-        });
-      };
-
-      menuToggle.addEventListener("click", () => {
-        isMenuOpen ? closeMenu() : openMenu();
+      // GSAP Dropdown Reveal
+      gsap.to(navOverlay, {
+        clipPath: "inset(0 0 0% 0)",
+        autoAlpha: 1,
+        duration: 0.8,
+        ease: "expo.out",
       });
 
-      // Updated link handling for mobile
-      mobLinks.forEach((link) => {
-        link.addEventListener("click", (e) => {
-          e.preventDefault();
-          const href = link.getAttribute("href");
-          const target = href === "#" ? 0 : href;
+      // Staggered Entrance
+      gsap.fromTo(
+        mobLinks,
+        {
+          y: 50,
+          x: -20,
+          opacity: 0,
+        },
+        {
+          y: 0,
+          x: 0,
+          opacity: 1,
+          stagger: 0.1,
+          duration: 1,
+          ease: "power3.out",
+          delay: 0.2,
+        },
+      );
+    };
 
-          closeMenu(() => {
-            lenis.scrollTo(target, {
-              offset: -80,
-              duration: 1.2,
-              ease: (t) => Math.min(1, 1.001 * t * t * t),
-            });
+    const closeMenu = (callback) => {
+      isMenuOpen = false;
+      menuToggle.classList.remove("open");
+
+      gsap.to(mobLinks, {
+        opacity: 0,
+        y: -20,
+        duration: 0.3,
+      });
+
+      gsap.to(navOverlay, {
+        clipPath: "inset(0 0 100% 0)",
+        autoAlpha: 0,
+        duration: 0.6,
+        ease: "expo.inOut",
+        onComplete: () => {
+          navOverlay.classList.remove("active");
+          lenis.start();
+          if (callback) callback();
+        },
+      });
+    };
+
+    menuToggle.addEventListener("click", () => {
+      isMenuOpen ? closeMenu() : openMenu();
+    });
+
+    // Updated link handling for mobile
+    mobLinks.forEach((link) => {
+      link.addEventListener("click", (e) => {
+        e.preventDefault();
+        const href = link.getAttribute("href");
+        const target = href === "#" ? 0 : href;
+
+        closeMenu(() => {
+          lenis.scrollTo(target, {
+            offset: -80,
+            duration: 1.2,
+            ease: (t) => Math.min(1, 1.001 * t * t * t),
           });
         });
       });
+    });
 
-      // Close on escape
-      window.addEventListener("keydown", (e) => {
-        if (e.key === "Escape" && isMenuOpen) closeMenu();
-      });
-    }
+    // Close on escape
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && isMenuOpen) closeMenu();
+    });
   }
 });
 
 // SCROLL ANIMATIONS
 
 // 1. Hero Parallax
-// 1. Hero Parallax & Scroll Handling
+// 1. Hero Parallax (Refined Multi-Layer)
 const heroSection = document.querySelector(".hero-section");
-const auroraOrbs = document.querySelectorAll(".aurora-orb");
-const heroContent = document.querySelector(".hero-container");
+const parallaxLayers = {
+  bg: document.querySelector(".layer-bg"),
+  mountainsBack: document.querySelector(".layer-mountains-back"),
+  mountainsFront: document.querySelector(".layer-mountains-front"),
+};
 
-if (heroSection) {
-  // Parallax for Aurora Orbs
-  gsap.to(auroraOrbs, {
-    yPercent: 30,
+if (heroSection && parallaxLayers.bg) {
+  // Layer 1: Background Sky (Slowest)
+  gsap.to(parallaxLayers.bg, {
+    yPercent: 10,
+    scale: 1.05,
     ease: "none",
     scrollTrigger: {
       trigger: heroSection,
       start: "top top",
       end: "bottom top",
-      scrub: 0,
+      scrub: true,
     },
   });
 
-  // Parallax for Content - handled carefully to not conflict with intro
-  // We use a timeline to ensure we are controlling the properties relative to their current state
-  const contentParallax = gsap.timeline({
-    scrollTrigger: {
-      trigger: heroSection,
-      start: "top top",
-      end: "bottom top",
-      scrub: 0.5,
-    },
-  });
+  // Layer 2: Distant Mountains (Medium)
+  if (parallaxLayers.mountainsBack) {
+    gsap.to(parallaxLayers.mountainsBack, {
+      yPercent: 20,
+      ease: "none",
+      scrollTrigger: {
+        trigger: heroSection,
+        start: "top top",
+        end: "bottom top",
+        scrub: true,
+      },
+    });
+  }
 
-  contentParallax.to(heroContent, {
-    opacity: 0,
-    y: -50,
-    scale: 0.95,
-    ease: "none",
-  });
+  // Layer 3: Foreground Mountains (Fastest)
+  if (parallaxLayers.mountainsFront) {
+    gsap.to(parallaxLayers.mountainsFront, {
+      yPercent: 40,
+      ease: "none",
+      scrollTrigger: {
+        trigger: heroSection,
+        start: "top top",
+        end: "bottom top",
+        scrub: true,
+      },
+    });
+  }
+
+  // Content Parallax (Slightly slower than mountains to sit "between" layers)
+  const heroContent = document.querySelector(".hero-container");
+  if (heroContent) {
+    gsap.to(heroContent, {
+      yPercent: 30, // Moves faster than back mountains, slower than front?
+      // No, usually content is static or moves slower than extreme foreground.
+      // Let's make content sink slightly.
+      opacity: 0,
+      ease: "none",
+      scrollTrigger: {
+        trigger: heroSection,
+        start: "top top",
+        end: "bottom 30%",
+        scrub: 0.5,
+      },
+    });
+  }
 }
 
 // 2. Global Reveal Logic
@@ -521,8 +505,7 @@ allImgs.forEach((img) => {
   );
 });
 
-// MOUSE PARALLAX & CURSOR & AURORA INTERACTION
-// MOUSE PARALLAX & CURSOR & ALIVE AURORA INTERACTION (Optimized)
+// MOUSE PARALLAX & CURSOR
 const cursorX = gsap.quickTo(".cursor", "x", {
   duration: 0.1,
   ease: "power2.out",
@@ -532,70 +515,15 @@ const cursorY = gsap.quickTo(".cursor", "y", {
   ease: "power2.out",
 });
 
-// Setup quickTo for each aurora orb to optimize performance
-const auroraOrbsForQuick = document.querySelectorAll(".aurora-orb");
-const auroraQuickX = [];
-const auroraQuickY = [];
-
-auroraOrbsForQuick.forEach((orb, i) => {
-  auroraQuickX.push(
-    gsap.quickTo(orb, "x", { duration: 1.5, ease: "power2.out" }),
-  );
-  auroraQuickY.push(
-    gsap.quickTo(orb, "y", { duration: 1.5, ease: "power2.out" }),
-  );
-});
-
 document.addEventListener("mousemove", (e) => {
   const { clientX, clientY } = e;
-
-  // Normalize mouse position (-1 to 1)
-  const xPos = (clientX / window.innerWidth - 0.5) * 2;
-  const yPos = (clientY / window.innerHeight - 0.5) * 2;
-
-  // Optimized Cursor Move
   cursorX(clientX);
   cursorY(clientY);
-
-  // Optimized Interactive Aurora Parallax
-  auroraOrbsForQuick.forEach((orb, i) => {
-    const depth = 50 + i * 20;
-    const moveX = xPos * depth;
-    const moveY = yPos * depth;
-
-    // Use quickTo setters instead of creating new tweens
-    if (auroraQuickX[i]) auroraQuickX[i](moveX);
-    if (auroraQuickY[i]) auroraQuickY[i](moveY);
-  });
 });
-
-// Initialize "Alive" Floating Animation
-function initAuroraFloat() {
-  const orbs = document.querySelectorAll(".aurora-orb");
-  orbs.forEach((orb, i) => {
-    // Randomize floats for organic feel
-    const duration = 15 + Math.random() * 10;
-    const xDist = 50 + Math.random() * 50;
-    const yDist = 50 + Math.random() * 50;
-
-    // Create specific timeline for this orb
-    const tl = gsap.timeline({ repeat: -1, yoyo: true });
-
-    tl.to(orb, {
-      xPercent: Math.random() < 0.5 ? -10 : 10,
-      yPercent: Math.random() < 0.5 ? -10 : 10,
-      scale: 1.1 + Math.random() * 0.2, // Pulse effect
-      rotation: Math.random() * 20 - 10,
-      duration: duration,
-      ease: "sine.inOut",
-    });
-  });
-}
-initAuroraFloat();
 
 // MAGNETIC ELEMENTS
 const magneticElements = document.querySelectorAll(
-  ".nav-item, .logo, .big-link",
+  ".nav-item, .logo-link, .big-link",
 );
 magneticElements.forEach((item) => {
   item.addEventListener("mousemove", (e) => {

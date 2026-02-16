@@ -7,41 +7,43 @@
   top: 0;
   left: 0;
   width: 100%;
-  height: 100%;
-  background: radial-gradient(
-    circle at center,
-    #1a1a1a 0%,
-    var(--bg-dark) 100%
-  );
+  height: 100vh;
+  background: #050505; /* Deep black */
   z-index: 99999;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  justify-content: flex-end; /* Align to bottom right or center */
+  align-items: flex-end;
+  padding: 3rem;
   color: #fff;
+  overflow: hidden;
+}
+
+.loader-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1rem;
 }
 
 .counter {
-  font-family: var(--font-heading);
-  font-size: clamp(5rem, 15vw, 15rem);
-  line-height: 1;
+  font-family: var(--font-heading, sans-serif);
+  font-size: clamp(4rem, 10vw, 8rem);
+  line-height: 0.8;
   font-weight: 800;
+  color: #fff;
   font-variant-numeric: tabular-nums;
-  background: var(--accent-gradient);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  letter-spacing: -0.05em;
 }
 
-.loading-text {
-  font-family: var(--font-body);
-  text-transform: uppercase;
-  letter-spacing: 0.2rem;
-  font-size: 0.875rem;
-  margin-top: 1rem;
-  opacity: 0.5;
+.loader-line {
+  width: 100vw;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.1);
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  transform-origin: left;
+  transform: scaleX(0);
 }
 
-/* Update Header to appear ABOVE preloader if needed, or wait. 
-   Usually header enters after preloader. 
-   Let's keep header z-index reasonable (100) and preloader very high (99999) */
+/* Curtain effect overlays (optional if handling via GSAP directly on main preloader) */
