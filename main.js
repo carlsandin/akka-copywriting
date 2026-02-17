@@ -574,9 +574,10 @@ hoverElements.forEach((el) => {
   });
 });
 
-window.addEventListener("resize", () => {
-  ScrollTrigger.refresh();
-});
+/* Resize listener removed to prevent mobile jitter. ScrollTrigger handles this automatically. */
+// window.addEventListener("resize", () => {
+//   ScrollTrigger.refresh();
+// });
 
 if (typeof lucide !== "undefined") {
   lucide.createIcons();
