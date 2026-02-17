@@ -191,7 +191,7 @@ window.addEventListener("load", () => {
         e.preventDefault();
         const target = href === "#" ? 0 : href;
         lenis.scrollTo(target, {
-          offset: -100,
+          offset: 0,
           duration: 1.5,
           ease: (t) => Math.min(1, 1.001 * t * t * t),
         });
@@ -316,7 +316,7 @@ window.addEventListener("load", () => {
 
         closeMenu(() => {
           lenis.scrollTo(target, {
-            offset: -80,
+            offset: 0,
             duration: 1.2,
             ease: (t) => Math.min(1, 1.001 * t * t * t),
           });
